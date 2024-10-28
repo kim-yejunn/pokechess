@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>실시간 체스 게임</title>
+    <link rel="stylesheet" href="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.3/chess.js"></script>
+    <script src="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.js"></script>
+    <style>
+        body { display: flex; flex-direction: column; align-items: center; }
+        #board { width: 400px; margin: 20px; }
+        #status { font-size: 1.2em; }
+    </style>
+</head>
+<body>
+    <h1>실시간 체스 게임</h1>
+    <div id="color-selection">
+        <button id="white">백 선택</button>
+        <button id="black">흑 선택</button>
+    </div>
+    <div id="board" class="chessboard" style="display: none;"></div>
+    <div id="status"></div>
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
