@@ -16,7 +16,7 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            cursor: pointer;
+            position: relative;
         }
         .white-cell {
             background-color: #fff;
@@ -28,6 +28,8 @@
             width: 40px;
             height: 40px;
             border-radius: 50%;
+            cursor: grab;
+            position: relative;
         }
         .black {
             background-color: #000;
@@ -37,10 +39,10 @@
             border: 2px solid #000;
         }
         .selected {
-            background-color: #ffeb3b;
+            outline: 2px solid #ffeb3b;
         }
         .valid-move {
-            background-color: #4caf50;
+            background-color: rgba(76, 175, 80, 0.5);
         }
     </style>
 </head>
@@ -64,7 +66,8 @@
                     cell.className = `cell ${(i + j) % 2 === 0 ? 'white-cell' : 'black-cell'}`;
                     cell.dataset.row = i;
                     cell.dataset.col = j;
-                    cell.addEventListener('click', handleCellClick);
+                    cell.addEventListener('dragover', handleDragOver);
+                    cell.addEventListener('drop', handleDrop);
                     row.appendChild(cell);
                 }
                 board.appendChild(row);
@@ -80,6 +83,8 @@
                 if (boardState[row][col]) {
                     const piece = document.createElement('div');
                     piece.className = `piece ${boardState[row][col]}`;
+                    piece.draggable = true;
+                    piece.addEventListener('dragstart', handleDragStart);
                     cell.appendChild(piece);
                 }
             });
@@ -95,57 +100,60 @@
             });
         }
 
-        async function handleCellClick(event) {
-            const row = parseInt(event.currentTarget.dataset.row);
-            const col = parseInt(event.currentTarget.dataset.col);
-            
-            if (selectedPiece === null) {
-                const response = await fetch('/select_piece', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({ row, col }),
-                });
-                const data = await response.json();
-                
-                if (data.status === 'success') {
-                    selectedPiece = [row, col];
-                    validMoves = data.valid_moves;
-                    event.currentTarget.classList.add('selected');
-                    highlightValidMoves(validMoves);
-                }
-            } else {
+        async function handleDragStart(event) {
+            const row = parseInt(event.target.parentElement.dataset.row);
+            const col = parseInt(event.target.parentElement.dataset.col);
+            selectedPiece = [row, col];
+
+            const response = await fetch('/select_piece', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ row, col }),
+            });
+            const data = await response.json();
+
+            if (data.status === 'success') {
+                validMoves = data.valid_moves;
+                highlightValidMoves(validMoves);
+            }
+        }
+
+        function handleDragOver(event) {
+            event.preventDefault();
+        }
+
+        async function handleDrop(event) {
+            const toRow = parseInt(event.currentTarget.dataset.row);
+            const toCol = parseInt(event.currentTarget.dataset.col);
+
+            if (selectedPiece) {
                 const response = await fetch('/move_piece', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
                     },
-                    body: JSON.stringify({ row, col }),
+                    body: JSON.stringify({ row: toRow, col: toCol }),
                 });
                 const data = await response.json();
-                
+
                 if (data.status === 'success') {
                     updateBoard(data.board);
-                    document.getElementById('turn-display').textContent = 
-                        `Current Turn: ${data.board[row][col] === 'black' ? 'White' : 'Black'}`;
+                    document.getElementById('turn-display').textContent =
+                        `Current Turn: ${data.next_turn}`;
                 }
-                
-                document.querySelector('.selected')?.classList.remove('selected');
+
                 highlightValidMoves([]);
                 selectedPiece = null;
-                validMoves = [];
             }
         }
 
-        async function initGame() {
-            createBoard();
-            const response = await fetch('/get_board');
-            const data = await response.json();
-            updateBoard(data.board);
-        }
-
-        initGame();
+        createBoard();
+        // 초기 보드 상태를 서버에서 가져와서 업데이트
+        fetch('/get_board')
+            .then(response => response.json())
+            .then(data => updateBoard(data.board));
     </script>
 </body>
 </html>
