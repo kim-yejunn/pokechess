@@ -3,14 +3,14 @@ $(function() {
     let turn = 'w';
     const socket = io();
 
-    // 초기 체스판 설정: 흰색 왕(T)은 아래쪽 두 칸, 검은색 왕(T)은 위쪽 두 칸 차지
+    // 초기 체스판 설정: 흰색 왕(wT)은 아래쪽 두 칸, 검은색 왕(bT)은 위쪽 두 칸을 차지
     const board = [
+        ['.', 'bD', 'bT', 'bT', 'bC', '.'],
+        ['.', '.', 'bA', 'bB', '.', '.'],
         ['.', '.', '.', '.', '.', '.'],
-        ['.', '.', 'bA', '.', 'bB', '.'],
         ['.', '.', '.', '.', '.', '.'],
-        ['.', '.', '.', '.', '.', '.'],
-        ['.', '.', '.', '.', '.', '.'],
-        ['.', '.', 'wT', 'wT', '.', '.']
+        ['.', '.', 'wB', 'wC', '.', '.'],
+        ['.', 'wA', 'wT', 'wT', 'wD', '.']
     ];
 
     function drawBoard() {
@@ -41,14 +41,20 @@ $(function() {
     }
 
     function movePiece(fromRow, fromCol, toRow, toCol) {
-        // 왕(T)은 이동할 수 없도록 설정
-        if (board[fromRow][fromCol] === 'T') {
+        const movingPiece = board[fromRow][fromCol];
+
+        // 왕(wT, bT)은 이동할 수 없도록 설정
+        if (movingPiece === 'wT' || movingPiece === 'bT') {
             return;
         }
 
-        // 한 칸 내에서만 이동 가능하도록 설정하고 빈 칸일 때만 이동 가능
-        if (board[toRow][toCol] === '.' && Math.abs(fromRow - toRow) <= 1 && Math.abs(fromCol - toCol) <= 1) {
-            board[toRow][toCol] = board[fromRow][fromCol];
+        // 이동 가능 조건: 한 칸 내 이동, 목표 위치가 빈칸이어야 함
+        const isAdjacentMove = Math.abs(fromRow - toRow) <= 1 && Math.abs(fromCol - toCol) <= 1;
+        const isTargetEmpty = board[toRow][toCol] === '.';
+
+        // 이동 조건이 맞을 때만 이동 수행
+        if (isAdjacentMove && isTargetEmpty) {
+            board[toRow][toCol] = movingPiece;
             board[fromRow][fromCol] = '.';
             turn = turn === 'w' ? 'b' : 'w';
             drawBoard();
@@ -61,7 +67,8 @@ $(function() {
         const row = parseInt($(this).attr('data-row'));
         const col = parseInt($(this).attr('data-col'));
 
-        if (board[row][col].toLowerCase() === turn) {
+        // 현재 플레이어의 차례에 해당하는 기물만 선택
+        if (board[row][col] !== '.' && board[row][col][0] === turn) {
             $('.square').removeClass('selected');
             $(this).addClass('selected');
         } else if ($('.selected').length) {
