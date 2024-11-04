@@ -1,19 +1,25 @@
-from flask import Flask, render_template
-from flask_socketio import SocketIO, join_room, leave_room, emit
+from flask import Flask, request
+from flask_socketio import SocketIO, emit, join_room, leave_room
 
-app = Flask(__name__, static_folder="../client/build", static_url_path="/")
+app = Flask(__name__)
+# app.config['SECRET_KEY'] = 'your_secret_key'
 socketio = SocketIO(app, cors_allowed_origins="*")
 
-@app.route("/")
+@app.route('/')
 def index():
-    return app.send_static_file("index.html")
+    return "Chess Real-Time Server Running"
 
-# 소켓 이벤트 처리 예시
-@socketio.on("create_room")
-def handle_create_room(data):
-    room_id = data["room_id"]
-    join_room(room_id)
-    emit("room_created", {"room_id": room_id}, room=room_id)
+@socketio.on('join_game')
+def handle_join(data):
+    room = data['room']
+    join_room(room)
+    emit('message', {'msg': 'A new player has joined the game!'}, room=room)
 
-if __name__ == "__main__":
-    socketio.run(app, debug=True)
+@socketio.on('move_piece')
+def handle_move(data):
+    room = data['room']
+    move_data = data['move']
+    emit('update_board', move_data, room=room)
+
+if __name__ == '__main__':
+    socketio.run(app)
