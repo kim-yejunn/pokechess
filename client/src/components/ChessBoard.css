@@ -1,0 +1,38 @@
+.chess-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+}
+
+.chess-board {
+  border: 2px solid #333;
+  display: inline-block;
+}
+
+.board-row {
+  display: flex;
+}
+
+.square {
+  width: 60px;
+  height: 60px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 40px;
+  cursor: pointer;
+  user-select: none;
+}
+
+.square:hover {
+  background-color: rgba(255, 255, 0, 0.2);
+}
+
+.white {
+  background-color: #fff;
+}
+
+.black {
+  background-color: #ccc;
+}
