@@ -1,11 +1,20 @@
-import React from 'react';
+import React, { useState } from 'react';
+import LoginPage from './LoginPage';
+import MainPage from './MainPage';
 
 function App() {
-  return (
-    <div className="App">
-      <h1>Hello, World!</h1>
-    </div>
-  );
+    const [isAuthenticated, setIsAuthenticated] = useState(false);
+
+    return (
+        <div>
+            <h1>PokeChess</h1>
+            {isAuthenticated ? (
+                <MainPage /> // 로그인 성공 시 MainPage를 보여줍니다
+            ) : (
+                <LoginPage setIsAuthenticated={setIsAuthenticated} />
+            )}
+        </div>
+    );
 }
 
-export default App;  // export default로 내보냅니다.
+export default App;
