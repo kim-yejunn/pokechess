@@ -1,17 +1,21 @@
-import React from 'react';
-import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
-import MainPage from './pages/MainPage';
-import GamePage from './pages/GamePage';
+import React, { useState } from 'react';
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import LoginPage from './pages/LoginPage';
+import MainPage from './pages/MainPage';
+import Game from './pages/GamePage';
 
 function App() {
+    const [isAuthenticated, setIsAuthenticated] = useState(false);
+
     return (
         <Router>
-            <Switch>
-                <Route path="/" exact component={MainPage} />
-                <Route path="/game" component={GamePage} />
-                <Route path="/login" component={LoginPage} />
-            </Switch>
+            <div>
+                <h1>Welcome to the Application</h1>
+                <Routes>
+                    <Route path="/" element={isAuthenticated ? <MainPage /> : <LoginPage setIsAuthenticated={setIsAuthenticated} />} />
+                    <Route path="/game" element={<Game />} />
+                </Routes>
+            </div>
         </Router>
     );
 }
