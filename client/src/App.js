@@ -1,11 +1,14 @@
 import React from 'react';
+import SimpleChat from './simpleChat'; 
+import io from 'socket.io-client';
 
 function App() {
-  return (
-    <div className="App">
-      <h1>Hello, World!</h1>
-    </div>
-  );
+    return (
+        <div>
+            <h1>Welcome to the Chat</h1>
+            <SimpleChat />
+        </div>
+    );
 }
 
-export default App;  // export default로 내보냅니다.
+export default App;

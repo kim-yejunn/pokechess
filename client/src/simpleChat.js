@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import io from 'socket.io-client';
 
-const socket = io.connect('http://192.168.56.1:5000'); // Replace with your Flask server IP
+const socket = io.connect('http://127.0.0.1:5000'); // Flask 서버 IP와 포트
 
 function SimpleChat() {
     const [message, setMessage] = useState('');
@@ -25,10 +25,10 @@ function SimpleChat() {
     return (
         <div>
             <h2>Simple Chat</h2>
-            <input 
-                type="text" 
-                value={message} 
-                onChange={(e) => setMessage(e.target.value)} 
+            <input
+                type="text"
+                value={message}
+                onChange={(e) => setMessage(e.target.value)}
             />
             <button onClick={sendMessage}>Send</button>
             <div>

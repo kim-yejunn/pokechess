@@ -21,5 +21,15 @@ def handle_move(data):
     move_data = data['move']
     emit('update_board', move_data, room=room)
 
+
+@socketio.on('send_message')
+def handle_message(data):
+    print(f"Message received: {data['msg']}")
+    emit('receive_message', {'msg': data['msg']}, broadcast=True)  # Send message to all clients
+
+
+
+
+
 if __name__ == '__main__':
     socketio.run(app)
