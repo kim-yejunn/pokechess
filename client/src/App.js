@@ -1,19 +1,18 @@
-import React, { useState } from 'react';
-import LoginPage from './LoginPage';
-import MainPage from './MainPage';
+import React from 'react';
+import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
+import MainPage from './pages/MainPage';
+import GamePage from './pages/GamePage';
+import LoginPage from './pages/LoginPage';
 
 function App() {
-    const [isAuthenticated, setIsAuthenticated] = useState(false);
-
     return (
-        <div>
-            <h1>PokeChess</h1>
-            {isAuthenticated ? (
-                <MainPage /> // 로그인 성공 시 MainPage를 보여줍니다
-            ) : (
-                <LoginPage setIsAuthenticated={setIsAuthenticated} />
-            )}
-        </div>
+        <Router>
+            <Switch>
+                <Route path="/" exact component={MainPage} />
+                <Route path="/game" component={GamePage} />
+                <Route path="/login" component={LoginPage} />
+            </Switch>
+        </Router>
     );
 }
 
