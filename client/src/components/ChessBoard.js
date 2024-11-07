@@ -33,7 +33,13 @@ const ChessBoard = ({ board, setBoard }) => {
                             onDragOver={(e) => e.preventDefault()}
                             onDrop={(e) => handleDrop(e, rowIndex, colIndex)}
                         >
-                            {piece}
+                            {piece ? (
+                                <img
+                                    src={piece}
+                                    alt="chess piece"
+                                    style={{ width: '100%', height: '100%' }}
+                                />
+                            ) : null}
                         </div>
                     ))}
                 </div>
