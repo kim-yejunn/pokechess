@@ -2,7 +2,7 @@
 import React from 'react';
 import '../styles/ChessBoard.css';
 
-const ChessBoard = ({ board, setBoard }) => {
+const ChessBoard = ({ board, setBoard, socket }) => {
     const handleDragStart = (e, fromRow, fromCol) => {
         e.dataTransfer.setData('piece', JSON.stringify({ fromRow, fromCol }));
     };
@@ -18,6 +18,11 @@ const ChessBoard = ({ board, setBoard }) => {
         newBoard[fromRow][fromCol] = '';
 
         setBoard(newBoard);
+        socket.emit('move_piece', {
+            room: 'chess_room',
+            source: { row: fromRow, col: fromCol },
+            target: { row: toRow, col: toCol }
+        });
     };
 
     return (

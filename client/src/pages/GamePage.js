@@ -22,18 +22,33 @@ const GamePage = () => {
 
     useEffect(() => {
         socket.on('update_board', (updatedBoard) => {
-            setBoard(updatedBoard);
+            const newBoard = convertTo2DArray(updatedBoard);
+            setBoard(newBoard);
         });
+
+        socket.emit('join_game', { room: 'chess_room' });
 
         return () => {
             socket.off('update_board');
         };
     }, []);
 
+    const convertTo2DArray = (boardState) => {
+        const rows = ['A', 'B', 'C', 'D', 'E', 'F'];
+        const newBoard = [];
+        for (let i = 1; i <= 6; i++) {
+            const row = [];
+            for (let j = 0; j < 6; j++) {
+                row.push(boardState[`${rows[j]}${i}`]);
+            }
+            newBoard.push(row);
+        }
+        return newBoard;
+    };
+
     return (
         <div>
-            <h2>Chess Game</h2>
-            <ChessBoard board={board} setBoard={setBoard} />
+            <ChessBoard board={board} setBoard={setBoard} socket={socket} />
         </div>
     );
 };
