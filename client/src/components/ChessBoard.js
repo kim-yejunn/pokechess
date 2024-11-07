@@ -37,7 +37,7 @@ const ChessBoard = ({ board, setBoard }) => {
                                 <img
                                     src={piece}
                                     alt="chess piece"
-                                    style={{ width: '100%', height: '100%' }}
+                                    className="chess-piece"
                                 />
                             ) : null}
                         </div>
