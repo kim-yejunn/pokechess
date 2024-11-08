@@ -21,8 +21,16 @@ export const isValidKingMove = (from, to, board) => {
         const targetPiece = board[to.row][to.col] || ''; // undefined일 경우 빈 문자열로 대체
         const sourcePiece = board[from.row][from.col] || ''; // undefined일 경우 빈 문자열로 대체
 
-        // 목표 칸이 빈 칸이거나 상대방 기물이 있는 경우 이동 가능
-        if (targetPiece === '' || targetPiece[0] !== sourcePiece[0]) {
+        // 기물 색상 추출
+        const sourceColor = sourcePiece.match(/\/([bw])[A-Z]\.png$/)?.[1];
+        const targetColor = targetPiece.match(/\/([bw])[A-Z]\.png$/)?.[1];
+
+        console.log(`sourceColor: ${sourceColor}, targetColor: ${targetColor}`);
+
+        // 목표 칸이 빈 칸이거나, 목표 기물이 상대방 기물일 때 유효한 이동
+        const isOpponentPiece = targetPiece && sourceColor && targetColor && sourceColor !== targetColor;
+
+        if (targetPiece === '' || isOpponentPiece) {
             return true;
         }
     }
