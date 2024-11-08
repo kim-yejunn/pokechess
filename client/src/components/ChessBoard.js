@@ -10,29 +10,33 @@ const ChessBoard = ({ board, setBoard, socket }) => {
 
     const handleDrop = (e, toRow, toCol) => {
         e.preventDefault();
-        const { fromRow, fromCol } = JSON.parse(e.dataTransfer.getData('piece'));
+        
+        const pieceData = e.dataTransfer.getData('piece');
+        if (!pieceData) return; // 데이터가 없는 경우 드롭 취소
     
-        if (fromRow === toRow && fromCol === toCol) return;
+        const { fromRow, fromCol } = JSON.parse(pieceData);
+        if (fromRow === toRow && fromCol === toCol) return; // 같은 위치로 이동 시 리턴
     
         const piece = board[fromRow][fromCol];
     
-        // 체스 규칙에 따라 이동이 유효한지 확인
+        // 이동이 유효한지 확인
         if (isValidMove(piece, { row: fromRow, col: fromCol }, { row: toRow, col: toCol }, board)) {
+            // 새로운 보드를 복사해서 업데이트
             const newBoard = board.map(row => [...row]);
-            newBoard[toRow][toCol] = newBoard[fromRow][fromCol];
-            newBoard[fromRow][fromCol] = '';
+            newBoard[toRow][toCol] = newBoard[fromRow][fromCol]; // 이동할 위치에 기물 배치
+            newBoard[fromRow][fromCol] = ''; // 원래 위치를 빈 문자열로 설정
     
-            setBoard(newBoard);
+            setBoard(newBoard); // 상태 업데이트
             socket.emit('move_piece', {
                 room: 'chess_room',
                 source: { row: fromRow, col: fromCol },
                 target: { row: toRow, col: toCol }
             });
         } else {
-            // 이동이 유효하지 않을 경우 피드백 제공 (예: 콘솔에 메시지 출력)
-            console.log("Invalid move!");
+            // 이동이 유효하지 않을 경우 원래 위치로 돌아가기
+            console.log("Invalid move! Piece will remain in the original position.");
         }
-    };    
+    };       
 
     return (
         <div className="chess-board">
