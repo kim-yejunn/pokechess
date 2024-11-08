@@ -13,16 +13,33 @@ chessboard_state = {
     'A5': '', 'B5': '', 'C5': '/pic_img/wK.png', 'D5': '/pic_img/wK.png', 'E5': '', 'F5': '',
     'A6': '', 'B6': '/pic_img/wK.png', 'C6': '/pic_img/wT.png', 'D6': '/pic_img/wT.png', 'E6': '/pic_img/wK.png', 'F6': '',
 }
+players = {} 
 
 @app.route('/')
 def serve():
     return send_from_directory(app.static_folder, 'index.html')
 
-@socketio.on('join_game')
+
+
+
+#접속 시 
+@socketio.on("join")
 def handle_join(data):
-    room = data['room']
-    join_room(room)
-    emit('update_board', chessboard_state, room=room)
+    if 'username' in data:
+        username = data['username']
+        print(f"{username} has joined the game.")
+    else:
+        # Handle the case where username is not provided
+        username = f"Guest{len(players) + 1}"  # Assign a default name like "Guest1"
+        print(f"{username} has joined the game as a guest.")
+
+    # Proceed with any additional logic for joining
+    if len(players) < 2:
+        players.append(username)
+        emit("join_success", {"username": username, "color": "black" if len(players) == 1 else "white"})
+    else:
+        emit("join_failed", {"message": "The game is full."})
+
 
 @socketio.on('move_piece')
 def handle_move_piece(data):
