@@ -1,8 +1,10 @@
 from flask import Flask, send_from_directory
+from flask_cors import CORS
 from flask_socketio import SocketIO, emit, join_room
 
-app = Flask(__name__, static_folder='client/build')
-socketio = SocketIO(app, cors_allowed_origins="*")
+app = Flask(__name__)
+CORS(app)  # HTTP 요청에 대한 CORS 적용
+socketio = SocketIO(app, cors_allowed_origins="*")  # WebSocket 요청에 대한 CORS 적용
 
 # Initialize the chessboard state here
 chessboard_state = {
@@ -33,5 +35,5 @@ def handle_move_piece(data):
     chessboard_state[target_key] = chessboard_state.pop(source_key)
     emit('update_board', chessboard_state, room=data['room'])
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     socketio.run(app, host="0.0.0.0", port=5000)

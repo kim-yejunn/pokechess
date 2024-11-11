@@ -1,8 +1,10 @@
 // src/socket.js
 import io from 'socket.io-client';
 
-// Connect to the Flask server (update the URL if needed)
-const socket = io.connect('http://127.0.0.1:5000'); // or http://127.0.0.1:5000
+// IP 주소
+const socket = io.connect('http://172.31.52.240:5001', {
+    transports: ['websocket']
+});
 
 socket.on('connect', () => {
     console.log('Connected to server!');
@@ -15,4 +17,5 @@ socket.on('disconnect', () => {
 socket.on('connect_error', (err) => {
     console.error('Connection error:', err);
 });
+
 export default socket;
